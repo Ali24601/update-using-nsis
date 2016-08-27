@@ -100,10 +100,15 @@ ShowUnInstDetails nevershow
 BrandingText "${PRODUCT_PUBLISHER} "
 CompletedText "${PRODUCT_NAME}已完成安装"
 
+;删除\安装所有用户下的快捷方式。首先添加RequestExecutionLevel admin
+;然后在创建快捷方式和删除快捷方式的地方加上SetShellVarContext all即可
 RequestExecutionLevel admin #NOTE: You still need to check user rights with UserInfo!
 
 Section "MainSection" SEC01
-	SetShellVarContext all
+  ;删除\安装所有用户下的快捷方式。首先添加RequestExecutionLevel admin
+  ;然后在创建快捷方式和删除快捷方式的地方加上SetShellVarContext all即可
+  SetShellVarContext all
+  
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   ;手动添加卸载程序
@@ -119,11 +124,11 @@ SectionEnd
 
 ;sll 2015.11.24 安装渲染器区段
 Section "RenderSection" SEC02
- 	;sll 2015.11.24
+  ;sll 2015.11.24
   ${GetRoot} "$INSTDIR" $1   ;获取安装根目录
   StrCpy $RenderDir "$1\errenderclient"
   SetOutPath $RenderDir
-	  /******************************
+    /******************************
     *  以下需填放向导生成的文件  *
     ******************************/
     /*****************************/
@@ -162,6 +167,7 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
   System::Call 'shell32.dll::SHChangeNotify(i ${SHCNE_ASSOCCHANGED}, i ${SHCNF_IDLIST}, i 0, i 0)'
+  ;文件类型关联发生了变化后调用SHChangeNotify并指定SHCNE_ASSOCCHANGED标志来指示外壳去刷新缓存和搜索新的处理程序
 SectionEnd
 
 /******************************
